@@ -1,0 +1,44 @@
+<!-- R Commander Markdown Template -->
+
+Replace with Main Title
+=======================
+
+### Your Name
+
+### `r as.character(Sys.Date())`
+
+```{r echo=FALSE}
+# include this code chunk as-is to set options
+knitr::opts_chunk$set(comment=NA, prompt=TRUE, out.width=750, fig.height=8, fig.width=8)
+library(Rcmdr)
+library(car)
+library(RcmdrMisc)
+```
+
+
+```{r echo=FALSE}
+# include this code chunk as-is to enable 3D graphs
+library(rgl)
+knitr::knit_hooks$set(webgl = hook_webgl)
+```
+
+```{r}
+GLM.1 <- glm(homeless ~ indtot, family=binomial(logit), data=h1)
+summary(GLM.1)
+exp(coef(GLM.1))  # Exponentiated coefficients ("odds ratios")
+```
+
+```{r}
+plot(allEffects(GLM.1))
+```
+
+```{r}
+library(MASS, pos=29)
+```
+
+
+```{r}
+Confint(GLM.1, level=0.95, type="LR")
+```
+
+
