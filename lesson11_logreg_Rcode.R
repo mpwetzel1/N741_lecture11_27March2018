@@ -15,6 +15,8 @@ library(haven)
 
 helpdat <- haven::read_spss("helpmkh.sav")
 
+# Note: info on data set is included in readme (full code book)
+
 # ============================================.
 # For this lesson we'll use the helpmkh dataset
 #
@@ -25,9 +27,10 @@ helpdat <- haven::read_spss("helpmkh.sav")
 # age, female, pss_fr, pcs, mcs, cesd and indtot
 # ============================================.
 
+# pcs and mcs look at physical and mental quality of life. CSD is depression, indtot - inventory of drug use consequence
 h1 <- helpdat %>%
   select(homeless, age, female, pss_fr,
-         pcs, mcs, cesd, indtot)
+         pcs, mcs, cesd, indtot) 
 
 # ============================================.
 # Let's run a logistic regression of indtot to predict
@@ -43,12 +46,16 @@ h1 <- helpdat %>%
 
 m1 <- glm(homeless ~ indtot, data=h1,
           family=binomial)
+# there's an option for glm called na.action
+# in your report, talk about missing
+# the model object m1 is both a lm and glm type at the same time
 
 # look at the model results
 m1
 
 # summary of the model results
-summary(m1)
+# Summary is a general function that does different things based on what kind of object is passed through.
+summary(m1) 
 
 # coefficients of the model - these are the
 # RAW Betas 
@@ -59,6 +66,8 @@ exp(coef(m1))
 
 # look at the predicted probabilities
 # review the help for predict.glm
+
+# First argument is the model object. Third argument is basically outcome
 m1.predict <- predict(m1, newdata=h1,
                       type="response")
 
@@ -74,13 +83,14 @@ table(h1$homeless, m1.predict > 0.5)
 # rearrange slightly
 # compare to this online calculator
 # http://statpages.info/ctab2x2.html
+# She uses this page to calculate sensitivity and specificity
 
 t1 <- table(m1.predict > 0.5, h1$homeless)
-t1
+t1 # this shows homeless as the 0/1, and then model predictions are TRUE/FALSE. This shows false negatives and false positives.
 
-tpr <- t1[2,2]/(t1[2,2]+t1[1,2])
+tpr <- t1[2,2]/(t1[2,2]+t1[1,2]) # true positive rate
 tpr #senstivity
-tnr <- t1[1,1]/(t1[1,1]+t1[2,1])
+tnr <- t1[1,1]/(t1[1,1]+t1[2,1]) # true negative rate
 tnr #specificity
 
 # we can use these data to compile 
@@ -127,6 +137,8 @@ pr <- prediction(p, as.numeric(h1$homeless))
 prf <- performance(pr, measure = "tpr", x.measure = "fpr")
 plot(prf)
 abline(a=0, b=1, col="red")
+# For reading this model, a linear straight line means no better than 50/50. 
+
 
 # the area under this curve compared
 # to the y=x reference line
@@ -137,6 +149,8 @@ abline(a=0, b=1, col="red")
 # AUC of 0.7-0.8 is pretty good
 # AUC of 0.8-0.9 is good
 # AUC 0.9-1.0 is great 
+
+# For reading this model, a linear straight line means no better than 50/50. 
 
 auc <- performance(pr, measure = "auc")
 auc <- auc@y.values[[1]]
